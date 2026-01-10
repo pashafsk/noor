@@ -1,0 +1,74 @@
+📄 Privacy Policy for Noor
+Effective Date: January 10, 2026
+
+1. Introduction
+Noor ("we," "our," or "the App") is committed to protecting the privacy of our users. This Privacy Policy explains how we handle information when you use the Noor mobile application.
+
+2. Information Collection and Use
+Noor does not collect, store, or share any personally identifiable information (PII).
+
+Location Data: The App requires access to your device's location (GPS) to calculate the precise direction of the Qibla based on your current coordinates.
+
+Processing: Location data is processed locally on your device and is "ephemeral" (it is used for the calculation and then immediately discarded).
+
+Storage: We do not store your location on our servers or share it with any third parties.
+
+Audio Streaming: The App streams Quranic recitations from third-party servers.
+
+Data Involved: When streaming, standard technical data (such as your IP address) is sent to the audio hosting provider to fulfill the request. No personal information is attached to these requests.
+
+3. Permissions
+To provide its core features, Noor requests the following permissions:
+
+Precise Location (GPS): Used solely for Qibla direction calculation.
+
+Internet Access: Used to stream audio recitations.
+
+Network State: Used to check for a connection before attempting to stream audio.
+
+4. Third-Party Services
+Noor may use open-source libraries (such as the Adhan library) to perform astronomical calculations. These libraries operate entirely offline and do not collect data.
+
+5. Children’s Privacy
+Noor is a religious and educational tool intended for a general audience. We do not knowingly collect any data from children under the age of 13.
+
+6. Security
+We value your trust. Since we do not collect personal data, there is no risk of your personal information being leaked from our systems. All audio streaming is conducted over secure HTTPS connections.
+
+7. Changes to This Policy
+We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "Effective Date."
+
+8. Contact Us
+If you have any questions or suggestions about our Privacy Policy, do not hesitate to contact us at: [YOUR_EMAIL_HERE]
+
+🛠️ How to Host This for Free (Google Requirement)
+Google Play requires a live URL for your privacy policy. The easiest way to do this in 2026 for free is using a GitHub Gist:
+
+Go to gist.github.com.
+
+Paste the text above into the main box.
+
+Name the file privacy-policy.md.
+
+Click Create Public Gist.
+
+Click the "Raw" button at the top right of the file.
+
+Copy that URL. This is the link you will paste into the Google Play Console.
+
+📋 Data Safety Form Answers
+When you fill out the Data Safety section in the Google Play Console, use these exact settings to ensure a fast approval:
+
+Data Collection: Select "No" for "Does your app collect or share any of the required user data types?"
+
+Note: Since location is processed ephemerally and not stored/sent to a server, Google considers this "No Collection."
+
+Security Practices:
+
+Select "Yes" to "Is all user data collected by your app encrypted in transit?" (Since audio uses HTTPS).
+
+Select "Yes" to "Do you provide a way for users to request that their data be deleted?"
+
+Privacy Policy: Paste your GitHub Gist URL.
+
+Would you like me to generate the "Terms and Conditions" document next, or should we focus on the "Splash Screen" (the opening logo animation) for Noor?
