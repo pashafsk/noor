@@ -39,36 +39,4 @@ We value your trust. Since we do not collect personal data, there is no risk of 
 We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "Effective Date."
 
 8. Contact Us
-If you have any questions or suggestions about our Privacy Policy, do not hesitate to contact us at: [YOUR_EMAIL_HERE]
-
-🛠️ How to Host This for Free (Google Requirement)
-Google Play requires a live URL for your privacy policy. The easiest way to do this in 2026 for free is using a GitHub Gist:
-
-Go to gist.github.com.
-
-Paste the text above into the main box.
-
-Name the file privacy-policy.md.
-
-Click Create Public Gist.
-
-Click the "Raw" button at the top right of the file.
-
-Copy that URL. This is the link you will paste into the Google Play Console.
-
-📋 Data Safety Form Answers
-When you fill out the Data Safety section in the Google Play Console, use these exact settings to ensure a fast approval:
-
-Data Collection: Select "No" for "Does your app collect or share any of the required user data types?"
-
-Note: Since location is processed ephemerally and not stored/sent to a server, Google considers this "No Collection."
-
-Security Practices:
-
-Select "Yes" to "Is all user data collected by your app encrypted in transit?" (Since audio uses HTTPS).
-
-Select "Yes" to "Do you provide a way for users to request that their data be deleted?"
-
-Privacy Policy: Paste your GitHub Gist URL.
-
-Would you like me to generate the "Terms and Conditions" document next, or should we focus on the "Splash Screen" (the opening logo animation) for Noor?
+If you have any questions or suggestions about our Privacy Policy, do not hesitate to contact us 
