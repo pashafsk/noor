@@ -61,15 +61,18 @@ print(dataset[0])
 
 
 # -----------------------------
-# Chat formatting
+# Formatting function
+# Unsloth requires LIST[str]
 # -----------------------------
 
 def formatting_func(example):
-    return tokenizer.apply_chat_template(
-        example["messages"],
-        tokenize=False,
-        add_generation_prompt=False,
-    )
+    return [
+        tokenizer.apply_chat_template(
+            example["messages"],
+            tokenize=False,
+            add_generation_prompt=False,
+        )
+    ]
 
 
 # -----------------------------
