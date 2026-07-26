@@ -1,47 +1,43 @@
-import unsloth
+from datasets import load_dataset
+from trl import SFTConfig, SFTTrainer
 from unsloth import FastLanguageModel
 import torch
-from datasets import load_dataset
-from trl import SFTTrainer, SFTConfig
 
-max_seq_length = 4096
-dtype = None
-load_in_4bit = True
-
+max_seq_length = 2048
 model, tokenizer = FastLanguageModel.from_pretrained(
     model_name="/workspace/models/qwen2.5-7b",
     max_seq_length=max_seq_length,
-    dtype=dtype,
-    load_in_4bit=load_in_4bit,
+    load_in_4bit=True,
 )
 
 model = FastLanguageModel.get_peft_model(
     model,
     r=16,
-    target_modules=[
-        "q_proj", "k_proj", "v_proj", "o_proj",
-        "gate_proj", "up_proj", "down_proj",
-    ],
+    target_modules=["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],
     lora_alpha=16,
     lora_dropout=0,
     bias="none",
     use_gradient_checkpointing="unsloth",
-    random_state=3407,
 )
 
-dataset = load_dataset(
-    "json", data_files="/workspace/nasdaq100_traps.jsonl", split="train"
-)
+# Load your JSONL dataset
+dataset = load_dataset("json", data_files={"train": "path_to_your_data.jsonl"}, split="train")
 
-# This is the bypass. It forces Unsloth to recognize the text column.
-def format_text(examples):
-    return examples["text"]
+# Define formatting function for chat messages structure
+def formatting_prompts_func(example):
+    return {"text": tokenizer.apply_chat_template(example["messages"], tokenize=False, add_generation_prompt=False)}
+
+# Map formatting across the dataset
+dataset = dataset.map(formatting_prompts_func, batched=False)
 
 trainer = SFTTrainer(
     model=model,
-    processing_class=tokenizer,
+    tokenizer=tokenizer,
     train_dataset=dataset,
-    formatting_func=format_text,
+    dataset_text_field="text",
+    max_seq_length=max_seq_length,
+    dataset_num_proc=2,
+    packing=False,
     args=SFTConfig(
         per_device_train_batch_size=2,
         gradient_accumulation_steps=4,
@@ -52,15 +48,7 @@ trainer = SFTTrainer(
         bf16=torch.cuda.is_bf16_supported(),
         logging_steps=1,
         output_dir="outputs",
-        max_seq_length=max_seq_length,
-        dataset_num_proc=2,
-        packing=False,
     ),
 )
 
-trainer.train()
-
-model.save_pretrained_merged(
-    "qwen2.5-7b-trader-adapter", tokenizer, save_method="merged_16bit"
-)
-print("Training complete and model merged successfully!")
+trainer_stats = trainer.train()
