@@ -33,11 +33,15 @@ dataset = load_dataset(
     "json", data_files="/workspace/nasdaq100_traps.jsonl", split="train"
 )
 
+# This is the bypass. It forces Unsloth to recognize the text column.
+def format_text(examples):
+    return examples["text"]
+
 trainer = SFTTrainer(
     model=model,
     processing_class=tokenizer,
     train_dataset=dataset,
-    dataset_text_field="text",
+    formatting_func=format_text,
     args=SFTConfig(
         per_device_train_batch_size=2,
         gradient_accumulation_steps=4,
