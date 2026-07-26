@@ -2,8 +2,7 @@ import unsloth
 from unsloth import FastLanguageModel
 import torch
 from datasets import load_dataset
-from transformers import TrainingArguments
-from trl import SFTTrainer
+from trl import SFTTrainer, SFTConfig
 
 max_seq_length = 4096
 dtype = None
@@ -41,12 +40,9 @@ dataset = load_dataset(
 
 trainer = SFTTrainer(
     model=model,
+    processing_class=tokenizer,
     train_dataset=dataset,
-    dataset_text_field="text",
-    max_seq_length=max_seq_length,
-    dataset_num_proc=2,
-    packing=False,
-    args=TrainingArguments(
+    args=SFTConfig(
         per_device_train_batch_size=2,
         gradient_accumulation_steps=4,
         warmup_steps=5,
@@ -56,12 +52,17 @@ trainer = SFTTrainer(
         bf16=torch.cuda.is_bf16_supported(),
         logging_steps=1,
         output_dir="outputs",
+        max_seq_length=max_seq_length,
+        dataset_text_field="text",
+        dataset_num_proc=2,
+        packing=False,
     ),
 )
 
-trainer_stats = trainer.train()
+trainer.train()
 
 model.save_pretrained_merged(
     "qwen2.5-7b-trader-adapter", tokenizer, save_method="merged_16bit"
 )
 print("Training complete and model merged successfully!")
+python3 train.py
