@@ -20,7 +20,7 @@ model = FastLanguageModel.get_peft_model(
     use_gradient_checkpointing="unsloth",
 )
 
-# Load the dataset from the specified path in /workspace
+# Load the dataset from the correct path in /workspace
 dataset = load_dataset("json", data_files={"train": "/workspace/nasdaq100_traps.jsonl"}, split="train")
 
 # Define formatting function for chat messages structure
