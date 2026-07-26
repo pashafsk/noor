@@ -21,7 +21,7 @@ model = FastLanguageModel.get_peft_model(
 )
 
 # Load your JSONL dataset
-dataset = load_dataset("json", data_files={"train": "path_to_your_data.jsonl"}, split="train")
+dataset = load_dataset("json", data_files={"train": "/workdspace/nasdaq100_traps.jsonl"}, split="train")
 
 # Define formatting function for chat messages structure
 def formatting_prompts_func(example):
