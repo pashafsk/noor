@@ -5,14 +5,18 @@ from datasets import load_dataset
 from trl import SFTTrainer, SFTConfig
 
 # -----------------------------------------------------------------------------
-# Model
+# Settings
 # -----------------------------------------------------------------------------
 
-max_seq_length = 2048
+MAX_SEQ_LENGTH = 2048
+
+# -----------------------------------------------------------------------------
+# Load model
+# -----------------------------------------------------------------------------
 
 model, tokenizer = FastLanguageModel.from_pretrained(
     model_name="/workspace/models/qwen2.5-7b",
-    max_seq_length=max_seq_length,
+    max_seq_length=MAX_SEQ_LENGTH,
     load_in_4bit=True,
 )
 
@@ -44,11 +48,19 @@ dataset = load_dataset(
     split="train",
 )
 
-print(dataset)
-print(dataset[0])
+# -----------------------------------------------------------------------------
+# REQUIRED by Unsloth
+# -----------------------------------------------------------------------------
+
+def formatting_func(example):
+    return tokenizer.apply_chat_template(
+        example["messages"],
+        tokenize=False,
+        add_generation_prompt=False,
+    )
 
 # -----------------------------------------------------------------------------
-# Trainer
+# Training args
 # -----------------------------------------------------------------------------
 
 training_args = SFTConfig(
@@ -59,18 +71,23 @@ training_args = SFTConfig(
     max_steps=60,
     learning_rate=2e-4,
     logging_steps=1,
+    save_steps=60,
+    save_strategy="steps",
     bf16=torch.cuda.is_bf16_supported(),
     fp16=not torch.cuda.is_bf16_supported(),
-    save_strategy="steps",
-    save_steps=60,
     report_to="none",
 )
+
+# -----------------------------------------------------------------------------
+# Trainer
+# -----------------------------------------------------------------------------
 
 trainer = SFTTrainer(
     model=model,
     args=training_args,
     train_dataset=dataset,
     processing_class=tokenizer,
+    formatting_func=formatting_func,
 )
 
 # -----------------------------------------------------------------------------
