@@ -24,7 +24,7 @@ model, tokenizer = FastLanguageModel.from_pretrained(
 
 
 # -----------------------------
-# LoRA setup
+# LoRA
 # -----------------------------
 
 model = FastLanguageModel.get_peft_model(
@@ -61,8 +61,8 @@ print(dataset[0])
 
 
 # -----------------------------
-# Formatting function
-# Unsloth requires LIST[str]
+# Formatting
+# IMPORTANT: Unsloth requires LIST[str]
 # -----------------------------
 
 def formatting_func(example):
@@ -81,23 +81,16 @@ def formatting_func(example):
 
 training_args = SFTConfig(
     output_dir="outputs",
-
     per_device_train_batch_size=2,
     gradient_accumulation_steps=4,
-
     warmup_steps=5,
     max_steps=60,
-
     learning_rate=2e-4,
-
     logging_steps=1,
-
     fp16=not torch.cuda.is_bf16_supported(),
     bf16=torch.cuda.is_bf16_supported(),
-
     save_strategy="steps",
     save_steps=60,
-
     report_to="none",
 )
 
