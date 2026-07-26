@@ -61,18 +61,15 @@ print(dataset[0])
 
 
 # -----------------------------
-# Formatting
-# IMPORTANT: Unsloth requires LIST[str]
+# Format chat dataset
 # -----------------------------
 
 def formatting_func(example):
-    return [
-        tokenizer.apply_chat_template(
-            example["messages"],
-            tokenize=False,
-            add_generation_prompt=False,
-        )
-    ]
+    return tokenizer.apply_chat_template(
+        example["messages"],
+        tokenize=False,
+        add_generation_prompt=False,
+    )
 
 
 # -----------------------------
@@ -81,16 +78,23 @@ def formatting_func(example):
 
 training_args = SFTConfig(
     output_dir="outputs",
+
     per_device_train_batch_size=2,
     gradient_accumulation_steps=4,
+
     warmup_steps=5,
     max_steps=60,
+
     learning_rate=2e-4,
+
     logging_steps=1,
+
     fp16=not torch.cuda.is_bf16_supported(),
     bf16=torch.cuda.is_bf16_supported(),
+
     save_strategy="steps",
     save_steps=60,
+
     report_to="none",
 )
 
@@ -105,7 +109,7 @@ trainer = SFTTrainer(
     train_dataset=dataset,
     formatting_func=formatting_func,
     max_seq_length=max_seq_length,
-    dataset_num_proc=2,
+    dataset_num_proc=1,
     packing=False,
     args=training_args,
 )
