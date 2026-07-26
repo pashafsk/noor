@@ -4,21 +4,28 @@ import torch
 from datasets import load_dataset
 from trl import SFTTrainer, SFTConfig
 
-# -----------------------------------------------------------------------------
+
+# -----------------------------
 # Settings
-# -----------------------------------------------------------------------------
+# -----------------------------
 
-MAX_SEQ_LENGTH = 2048
+max_seq_length = 2048
 
-# -----------------------------------------------------------------------------
+
+# -----------------------------
 # Load model
-# -----------------------------------------------------------------------------
+# -----------------------------
 
 model, tokenizer = FastLanguageModel.from_pretrained(
     model_name="/workspace/models/qwen2.5-7b",
-    max_seq_length=MAX_SEQ_LENGTH,
+    max_seq_length=max_seq_length,
     load_in_4bit=True,
 )
+
+
+# -----------------------------
+# LoRA setup
+# -----------------------------
 
 model = FastLanguageModel.get_peft_model(
     model,
@@ -38,9 +45,10 @@ model = FastLanguageModel.get_peft_model(
     use_gradient_checkpointing="unsloth",
 )
 
-# -----------------------------------------------------------------------------
+
+# -----------------------------
 # Dataset
-# -----------------------------------------------------------------------------
+# -----------------------------
 
 dataset = load_dataset(
     "json",
@@ -48,9 +56,13 @@ dataset = load_dataset(
     split="train",
 )
 
-# -----------------------------------------------------------------------------
-# REQUIRED by Unsloth
-# -----------------------------------------------------------------------------
+print(dataset)
+print(dataset[0])
+
+
+# -----------------------------
+# Chat formatting
+# -----------------------------
 
 def formatting_func(example):
     return tokenizer.apply_chat_template(
@@ -59,46 +71,60 @@ def formatting_func(example):
         add_generation_prompt=False,
     )
 
-# -----------------------------------------------------------------------------
-# Training args
-# -----------------------------------------------------------------------------
+
+# -----------------------------
+# Training config
+# -----------------------------
 
 training_args = SFTConfig(
     output_dir="outputs",
+
     per_device_train_batch_size=2,
     gradient_accumulation_steps=4,
+
     warmup_steps=5,
     max_steps=60,
+
     learning_rate=2e-4,
+
     logging_steps=1,
-    save_steps=60,
-    save_strategy="steps",
-    bf16=torch.cuda.is_bf16_supported(),
+
     fp16=not torch.cuda.is_bf16_supported(),
+    bf16=torch.cuda.is_bf16_supported(),
+
+    save_strategy="steps",
+    save_steps=60,
+
     report_to="none",
 )
 
-# -----------------------------------------------------------------------------
+
+# -----------------------------
 # Trainer
-# -----------------------------------------------------------------------------
+# -----------------------------
 
 trainer = SFTTrainer(
     model=model,
-    args=training_args,
+    tokenizer=tokenizer,
     train_dataset=dataset,
-    processing_class=tokenizer,
     formatting_func=formatting_func,
+    max_seq_length=max_seq_length,
+    dataset_num_proc=2,
+    packing=False,
+    args=training_args,
 )
 
-# -----------------------------------------------------------------------------
+
+# -----------------------------
 # Train
-# -----------------------------------------------------------------------------
+# -----------------------------
 
 trainer.train()
 
-# -----------------------------------------------------------------------------
+
+# -----------------------------
 # Save
-# -----------------------------------------------------------------------------
+# -----------------------------
 
 trainer.save_model("outputs/final")
 tokenizer.save_pretrained("outputs/final")
