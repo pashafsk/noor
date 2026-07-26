@@ -19,13 +19,8 @@ model = FastLanguageModel.get_peft_model(
     model,
     r=16,
     target_modules=[
-        "q_proj",
-        "k_proj",
-        "v_proj",
-        "o_proj",
-        "gate_proj",
-        "up_proj",
-        "down_proj",
+        "q_proj", "k_proj", "v_proj", "o_proj",
+        "gate_proj", "up_proj", "down_proj",
     ],
     lora_alpha=16,
     lora_dropout=0,
@@ -42,6 +37,7 @@ trainer = SFTTrainer(
     model=model,
     processing_class=tokenizer,
     train_dataset=dataset,
+    dataset_text_field="text",
     args=SFTConfig(
         per_device_train_batch_size=2,
         gradient_accumulation_steps=4,
@@ -53,7 +49,6 @@ trainer = SFTTrainer(
         logging_steps=1,
         output_dir="outputs",
         max_seq_length=max_seq_length,
-        dataset_text_field="text",
         dataset_num_proc=2,
         packing=False,
     ),
@@ -65,4 +60,3 @@ model.save_pretrained_merged(
     "qwen2.5-7b-trader-adapter", tokenizer, save_method="merged_16bit"
 )
 print("Training complete and model merged successfully!")
-python3 train.py
